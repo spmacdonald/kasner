@@ -1,0 +1,9 @@
+
+
+Dependencies
+============
+1. svgfig for drawing diagrams (figures/routines)
+    - download from: http://code.google.com/p/svgfig/
+    - tar xvfz svgfix-x.y.z.tgz
+    - cd svgfig/
+    - sudo python setup.py install
