@@ -31,7 +31,7 @@ public:
 
 void Path::init()
 {
-    for (unsigned i = 0; i < sequence.size(); ++i)
+    for (size_t i = 0; i < sequence.size(); ++i)
     {
         sequence[i] = i % 2;
     }
@@ -212,10 +212,10 @@ int main(int argc, char* argv[])
     cout << "Number of paths: " << paths.size() << endl;
 
     // Output the path strings.
-    // for (size_t i = 0; i < paths.size(); ++i)
-    // {
-        // cout << paths[i] << endl;
-    // }
+    for (size_t i = 0; i < paths.size(); ++i)
+    {
+        cout << paths[i] << endl;
+    }
 
 
     return 0;
