@@ -9,7 +9,7 @@ class KasnerHeap(object):
 
     def __getitem__(self, key):
         return self.storage[key]
-        
+
     def add(self, d):
         self.storage.append(d)
 
@@ -20,8 +20,8 @@ class KasnerHeap(object):
         return range(2**(n-1)-1, 2**n-1)
 
     def _parent(self, ix):
-        return int(floor((ix+1)/2)-1) 
-    
+        return int(floor((ix+1)/2)-1)
+
     def follow(self, ix):
         trail = [ix]
         while True:

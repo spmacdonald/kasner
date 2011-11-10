@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class Path 
+class Path
 {
 private:
     vector<int> sequence;
@@ -29,22 +29,26 @@ public:
     friend ostream& operator<<(ostream& output, const Path& p);
 };
 
-void Path::init() 
+void Path::init()
 {
-    for (unsigned i = 0; i < sequence.size(); ++i) {
+    for (unsigned i = 0; i < sequence.size(); ++i)
+    {
         sequence[i] = i % 2;
-    }    
+    }
 }
 
 bool Path::operator<(const Path& rhs) const
 {
-    return lexicographical_compare((*this).begin(), (*this).end(), rhs.begin(), rhs.end());
+    return lexicographical_compare(
+            (*this).begin(), (*this).end(), rhs.begin(), rhs.end());
 }
 
 bool Path::operator==(Path& rhs)
 {
-    for (size_t i = 0; i < rhs.size(); ++i) {
-        if ( (*this)[i] != rhs[i] ) {
+    for (size_t i = 0; i < rhs.size(); ++i)
+    {
+        if ((*this)[i] != rhs[i])
+        {
             return false;
         }
     }
@@ -52,42 +56,47 @@ bool Path::operator==(Path& rhs)
     return true;
 }
 
-ostream& operator<<(ostream& output, const Path& p) 
+ostream& operator<<(ostream& output, const Path& p)
 {
     copy(p.sequence.begin(), p.sequence.end(), ostream_iterator<int>(cout));
 
     return output;
 }
 
-void nextpath(Path& p, int n) 
+void nextpath(Path& p, int n)
 {
     p[n]++;
-    if (p[n] > 2) {
+    if (p[n] > 2)
+    {
         p[n] = 0;
         nextpath(p, (n-1));
     }
-    if (p[n-1] == p[n]) {
+    if (p[n-1] == p[n])
+    {
         nextpath(p, n);
     }
 }
 
-int circularMin(Path& p) 
+int circularMin(Path& p)
 {
     int i = 0;
     int j = 1;
     int k = 0;
     int m = p.size();
 
-    vector<int> b(2*m+1, 0);
+    vector<int> b(2 * m + 1, 0);
     b[0] = -1;
 
-    while (k+j < 2*m) {
-        if (j - i == m) {
+    while (k + j < 2 * m)
+    {
+        if (j - i == m)
             break;
-        }
+
         b[j] = i;
-        while (i >= 0 && p[(k+j) % m] != p[(k+i) % m]) {
-            if (p[(k+j) % m] < p[(k+i) % m]) {
+        while (i >= 0 && p[(k + j) % m] != p[(k + i) % m])
+        {
+            if (p[(k + j) % m] < p[(k + i) % m])
+            {
                 k = k + j - i;
                 j = i;
             }
@@ -105,36 +114,43 @@ bool isPathTerminating(Path& p)
     int zeroCount = 0;
     int oneCount = 0;
     int twoCount = 0;
-    
-    for (size_t i = 0; i < p.size(); ++i) {
-        if (p[i] == 0) {
+
+    for (size_t i = 0; i < p.size(); ++i)
+    {
+        if (p[i] == 0)
+        {
             zeroCount++;
         }
-        else if (p[i] == 1) {
+        else if (p[i] == 1)
+        {
             oneCount++;
         }
-        else if (p[i] == 2) {
+        else if (p[i] == 2)
+        {
             twoCount++;
         }
-        else {
+        else
+        {
             cout << "Expected path value to be either 0,1,2." << endl;
             abort();
         }
     }
 
-    if (zeroCount == 0 || oneCount == 0 || twoCount == 0) {
+    if (zeroCount == 0 || oneCount == 0 || twoCount == 0)
+    {
         return false;
     }
-    else {
-        return true;
-    }
+
+    return true;
 }
 
 bool isPathBalanced(Path& p)
 {
     // Assumes path is rotated to its lexicographically least conjugate.
-    for (size_t i = 0; i < (p.size() - 1); ++i) {
-        if (p[i] == p[i+1]) {
+    for (size_t i = 0; i < p.size() - 1; ++i)
+    {
+        if (p[i] == p[i + 1])
+        {
             return false;
         }
     }
@@ -150,31 +166,33 @@ bool isPathValid(Path& p)
 void removeInvalidPaths(vector<Path>& paths)
 {
     vector<Path>::iterator pathIter;
-    for (pathIter = paths.begin(); pathIter != paths.end(); ) {
-        if (!isPathValid(*pathIter)) {
+    for (pathIter = paths.begin(); pathIter != paths.end(); )
+    {
+        if (!isPathValid(*pathIter))
+        {
             pathIter = paths.erase(pathIter);
         }
-        else {
+        else
+        {
             ++pathIter;
         }
     }
+}
 
-} 
-
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     int n(atoi(argv[1]));
-    // int n = 5;
     Path p = Path(n);
 
     // Populate vector with search space.
     vector<Path> paths(pow(2, n-1), Path(n));
-    for (int i = 0; i < pow(2, n-1); ++i) {
+    for (int i = 0; i < pow(2, n-1); ++i)
+    {
         paths[i] = p;
         nextpath(p, n-1);
     }
-    cout << "Total search space: " << paths.size() << endl;
-    
+    // cout << "Total search space: " << paths.size() << endl;
+
     // Rotate all paths to their least conjugate order.
     for (size_t i = 0; i < paths.size(); ++i) {
         int k = circularMin(paths[i]);
@@ -186,17 +204,19 @@ int main(int argc, char* argv[])
 
     // Remove duplicates.
     vector<Path>::iterator i = unique(paths.begin(), paths.end());
-    paths.resize(i-paths.begin());
-    cout << "Number of paths remaining after duplicate paths removed: " << paths.size() << endl;
+    paths.resize(i - paths.begin());
+    // cout << "Number of paths remaining after duplicate paths removed: " << paths.size() << endl;
 
     // Remove paths that do not contain at least one occurance of each letter.
     removeInvalidPaths(paths);
-    cout << "Number of paths remaining after invalid paths removed: " << paths.size() << endl;
+    cout << "Number of paths: " << paths.size() << endl;
 
-    // for (size_t i = 0; i < paths.size(); ++i) {
+    // Output the path strings.
+    // for (size_t i = 0; i < paths.size(); ++i)
+    // {
         // cout << paths[i] << endl;
     // }
 
 
-    return 0;    
+    return 0;
 }
