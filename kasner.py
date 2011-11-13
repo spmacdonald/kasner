@@ -1,4 +1,5 @@
 import sys
+import copy
 
 class KasnerPath:
     """ """
@@ -10,7 +11,7 @@ class KasnerPath:
 
     def __iter__(self):
         for i in range(2**(self.n - 1)):
-            path = self.circular_min(self.data)
+            path = copy.copy(self.circular_min(self.data))
             if tuple(path) not in self.seen_paths and self.is_periodic(path):
                 self.seen_paths.add(tuple(path))
                 yield path
