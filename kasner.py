@@ -1,5 +1,61 @@
 import sys
-import copy
+from math import sqrt
+from collections import namedtuple
+
+TOL = 1e-8
+
+
+class Point(namedtuple("Point", "x y")):
+
+    def __eq__(self, other):
+        return almost_equal(self.x, other.x) and almost_equal(self.y, other.y)
+
+
+def circle_line_intersection(point, vertex):
+
+    dx = vertex.x - point.x
+    dy = vertex.y - point.y
+    dr = dx*dx + dy*dy
+    d = point.x*vertex.y - vertex.x*point.y
+    discriminant = dr - d*d
+
+    if discriminant < 0:
+        return None
+    else:
+        discriminant = sqrt(discriminant)
+
+        x0 = ( d*dy + sgn(dy)*dx*discriminant ) / dr
+        y0 = ( -d*dx + abs(dy)*discriminant ) / dr
+        p0 = Point(x0, y0)
+
+        x1 = ( d*dy - sgn(dy)*dx*discriminant ) / dr
+        y1 = ( -d*dx - abs(dy)*discriminant ) / dr
+        p1 = Point(x1, y1)
+
+        if p0 != point:
+            return p0
+        elif p1 != point:
+            return p1
+        else:
+            return None
+
+
+def almost_equal(x, y):
+    if abs(x - y) < TOL:
+        return True
+    return False
+
+def sgn(x):
+    """
+    Implements the mathematical sgn*(x) function.
+
+    See:
+        http://mathworld.wolfram.com/Circle-LineIntersection.html
+    """
+
+    if x < 0.0:
+        return -1.0
+    return 1.0
 
 class KasnerPath:
     """ """
@@ -10,20 +66,22 @@ class KasnerPath:
         self.seen_paths = set()
 
     def __iter__(self):
+        path = self.data
         for i in range(2**(self.n - 1)):
-            path = copy.copy(self.circular_min(self.data))
-            if tuple(path) not in self.seen_paths and self.is_periodic(path):
-                self.seen_paths.add(tuple(path))
-                yield path
-            self._next_path(self.n - 1)
+            path = self.next_path(path, self.n - 1)
+            least_path = tuple(self.circular_min(path))
+            if least_path not in self.seen_paths and self.is_periodic(least_path):
+                self.seen_paths.add(least_path)
+                yield least_path
 
-    def _next_path(self, i):
-        self.data[i] += 1
-        if self.data[i] > 2:
-            self.data[i] = 0
-            self._next_path(i - 1)
-        if self.data[i - 1] == self.data[i]:
-            self._next_path(i)
+    def next_path(self, path, i):
+        path[i] += 1
+        if path[i] > 2:
+            path[i] = 0
+            self.next_path(path, i - 1)
+        if path[i - 1] == path[i]:
+            self.next_path(path, i)
+        return path
 
     def is_periodic(self, path):
         return self.is_path_terminating(path) and self.is_path_balanced(path)
@@ -82,5 +140,7 @@ if __name__ == "__main__":
 
     paths = KasnerPath(int(sys.argv[1]))
     for p in paths:
-        continue
-        # print "Periodic path:", p
+        print "Periodic path:", p
+
+    p = Point(2, 0)
+    print p == p
