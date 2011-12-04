@@ -2,8 +2,7 @@ float th = 0;
 
 void setup() {
   size(500, 500, P3D);
-  lights();
-  fill(200);
+  smooth();
 }
 
 void draw() {
@@ -26,17 +25,7 @@ void draw() {
 
   translate(width/2, height/2);
   scale(50);
-  // float ct = cos(radians(th));
-  // float st = sin(radians(th));
-  // applyMatrix(  ct, 0.0,  st,  0.0,
-               // 0.0, 1.0, 0.0,  0.0,
-               // -st, 0.0,  ct,  0.0,
-               // 0.0, 0.0, 0.0,  1.0);
-  // th += 0.1;
-  //
-  // rotateY(PI/3);
-  // rotateX(PI/3);
-  // rotateZ(PI/3);
+
   sphere(1);
   line(x0, y0, z0, x1, y1, z1);
   line(x0, y0, z0, x2, y2, z2);

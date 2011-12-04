@@ -2,14 +2,39 @@ import sys
 from math import sqrt
 from collections import namedtuple
 
-TOL = 1e-8
-
-
 class Point(namedtuple("Point", "x y")):
 
     def __eq__(self, other):
         return almost_equal(self.x, other.x) and almost_equal(self.y, other.y)
 
+    def __ne__(self, other):
+        return not almost_equal(self.x, other.x) or not almost_equal(self.y, other.y)
+
+TOL = 1e-12
+SQRT3 = 1.7320508075688772
+FIXED_POINTS = {0: Point(2.0, 0.0),
+                1: Point(-1.0, SQRT3),
+                2: Point(-1.0, -SQRT3)}
+
+
+def refine_path(path):
+    p1 = Point(0.5, sqrt(3) / 2.0)
+    p2 = Point(0.5, -sqrt(3) / 2.0)
+    dist = sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
+
+    path = list(path)
+    path.reverse()
+    while dist > TOL:
+        for v in path:
+            p1 = circle_line_intersection(p1, FIXED_POINTS[v])
+            p2 = circle_line_intersection(p2, FIXED_POINTS[v])
+        dist = sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2)
+
+    # XXX: Check the order of points matches path string.
+    path.reverse()
+    for v in path:
+        p1 = circle_line_intersection(p1, FIXED_POINTS[v])
+        p2 = circle_line_intersection(p2, FIXED_POINTS[v])
 
 def circle_line_intersection(point, vertex):
 
@@ -27,17 +52,16 @@ def circle_line_intersection(point, vertex):
         x0 = ( d*dy + sgn(dy)*dx*discriminant ) / dr
         y0 = ( -d*dx + abs(dy)*discriminant ) / dr
         p0 = Point(x0, y0)
+        if p0 != point:
+            return p0
 
         x1 = ( d*dy - sgn(dy)*dx*discriminant ) / dr
         y1 = ( -d*dx - abs(dy)*discriminant ) / dr
         p1 = Point(x1, y1)
-
-        if p0 != point:
-            return p0
-        elif p1 != point:
+        if p1 != point:
             return p1
-        else:
-            return None
+
+        return None
 
 
 def almost_equal(x, y):
@@ -140,7 +164,5 @@ if __name__ == "__main__":
 
     paths = KasnerPath(int(sys.argv[1]))
     for p in paths:
-        print "Periodic path:", p
+        refine_path(p)
 
-    p = Point(2, 0)
-    print p == p

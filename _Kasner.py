@@ -1,7 +1,7 @@
 from math import fabs, sqrt, cos, sin, pi
 from time import time
 
-from KasnerHeap import KasnerHeap
+from _KasnerHeap import KasnerHeap
 
 ##
 # Constants

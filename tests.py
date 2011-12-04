@@ -6,10 +6,8 @@ from kasner import KasnerPath, Point, circle_line_intersection
 class TestKasnerRange(unittest.TestCase):
 
     def test_intersection(self):
-        from math import sqrt
-
         p1 = Point(0.963525, -0.267617)
-        p2 = Point(-1, sqrt(3))
+        p2 = Point(-1, 1.7320508075688772)
         p = circle_line_intersection(p1, p2)
         self.assertTrue(p == Point(-0.250000279, 0.968245764))
 
