@@ -23,10 +23,22 @@ class KasnerSequence:
 
 class KasnerPath:
 
-    def __init__(self):
+    def __init__(self, n):
+        self.n = n
         self.seen_paths = set()
+        self._add_all_paths()
 
-    def add(self, s):
+    def __iter__(self):
+        return iter(sorted(self.seen_paths))
+
+    def __len__(self):
+        return len(self.seen_paths)
+
+    def _add_all_paths(self):
+        for s in KasnerSequence(self.n):
+            self._add_path(s)
+
+    def _add_path(self, s):
         rotations = [s[i:] + s[:i] for i in range(len(s))]
         least_rotation = sorted(rotations)[0]
         if self._valid_path(least_rotation):
@@ -48,9 +60,6 @@ class KasnerPath:
 
 if __name__ == "__main__":
 
-    paths = KasnerPath()
-    for s in KasnerSequence(int(sys.argv[1])):
-        paths.add(s)
+    n = int(sys.argv[1])
 
-    print len(paths.seen_paths)
-
+    print len(KasnerPath(n))
