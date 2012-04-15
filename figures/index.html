@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+  <head>
+    <script type="application/javascript" src="d3.v2.js"></script>
+  </head>
+  <body>
+
+  <form name="poo" onsubmit="foo();return false;">
+    <label>Select the number of lines to draw</label>
+    <input id="number-points" type="range" min="1" max="10" value="1" onchange="setNumPoints(this.value)" />
+    <span id="display-num-points">1</span>
+  </form>
+
+  <div id="vis">
+    <script type="application/javascript" src="kasner.js"></script>
+  </div>
+  </body>
+</html>

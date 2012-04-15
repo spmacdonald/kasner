@@ -1,27 +1,68 @@
-var dim = 500,
-    numPoints = 4,
-    startX = -0.499341960797,
-    startY = -0.866404989706,
-    strokeWidth = "0.016px",
-    PI = Math.PI,
-    triangleLines = [{x1: 2, y1: 0, x2: -1, y2: Math.sqrt(3)},
-                     {x1: 2, y1: 0, x2: -1, y2: -Math.sqrt(3)},
-                     {x1: -1, y1: -Math.sqrt(3), x2: -1, y2: Math.sqrt(3)}];
+var dim = 500;
 
 var svg = d3.select("#vis").append("svg")
     .attr("width", dim)
-    .attr("height", dim)
-  .append("g")
-    .attr("transform", "translate(250, 250) scale(125)");
+    .attr("height", dim);
 
-var ring = svg.append("circle")
-    .attr("fill", "none")
+/*
+var nodes = svg.selectAll("circle")
+    .data([0, 1, 2, 3, 4])
+  .enter().append("circle")
+    .attr("fill", "black")
     .attr("stroke", "black")
-    .attr("stroke-width", strokeWidth)
     .attr("cx", 0)
     .attr("cy", 0)
-    .attr("r", 1);
+    .attr("r", 10)
+    .each(drawTree(250, 0));
+*/
 
+svg.append("circle")
+  .attr("fill", "black")
+  .attr("stroke", "black")
+  .attr("cx", 250)
+  .attr("cy", 20)
+  .attr("r", 10)
+
+drawTree(0, 250, 20);
+
+function drawTree(depth, x, y) {
+  if (depth > 2) {
+    return;
+  }
+  depth += 1
+
+  var center = x * Math.pow(2, -depth);
+  console.log(Math.pow(2, -depth));
+
+  svg.append("circle")
+    .attr("fill", "black")
+    .attr("stroke", "black")
+    .attr("cx", x+20)
+    .attr("cy", y+50)
+    .attr("r", 10)
+  svg.append("circle")
+    .attr("fill", "black")
+    .attr("stroke", "black")
+    .attr("cx", x-20)
+    .attr("cy", y+50)
+    .attr("r", 10)
+
+    drawTree(depth, x+40, y+50);
+    drawTree(depth, x-40, y+50);
+}
+
+
+/*
+function drawTree(x, y) {
+  y += 10;
+  return function() {
+    d3.select(this).transition().duration(0).attr("cx", 10).attr("cy", y).each("end", drawTree(x, y));
+  };
+}
+*/
+
+
+/*
 var line = svg.selectAll("line.triangle")
     .data(triangleLines)
   .enter().append("line")
@@ -41,7 +82,7 @@ var ringpaths = svg.append("g").attr("id", "ringpaths");
 var knob = svg.append("g")
     .attr("transform", "translate(-0.144, -0.144)")
   .selectAll("image")
-    .data([{x: startX, y: startY}])
+    .data([{x: 0.963525, y: 0.267617}])
   .enter().append("image")
     .attr("class", "control")
     .attr("x", function(d) { return d.x; })
@@ -62,8 +103,8 @@ var knob = svg.append("g")
         d.x = Math.cos(angle);
         d.y = Math.sin(angle);
         svg.select("image.control")
-          .attr("x", function(d) { console.log(d.x); return d.x; })
-          .attr("y", function(d) { console.log(d.y); return d.y; });
+          .attr("x", function(d) { return d.x; })
+          .attr("y", function(d) { return d.y; });
 
 
         pathPoints(angle, numPoints);
@@ -138,4 +179,6 @@ function nextAngle(angle) {
   else {
     return Math.acos((5 * Math.cos(angle) - 4) / (4 * Math.cos(angle) - 5));
   }
+  return false;
 }
+*/
