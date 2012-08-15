@@ -1,71 +1,55 @@
-import sys
-from math import pi, acos, cos, sin
+from math import pi, acos, cos
 
 
-class KasnerSequence(object):
+def generate_sequences(n):
+    sequence = [i % 2 for i in range(n)]
 
-    def __init__(self, n):
-        self.n = n
-        self.num_iter = 2 ** (n - 1)
-        self.sequence = [i % 2 for i in range(n)]
+    def next_sequence(i):
+        sequence[i] += 1
+        if sequence[i] > 2:
+            sequence[i] = 0
+            next_sequence(i - 1)
+        if sequence[i - 1] == sequence[i]:
+            next_sequence(i)
 
-    def __iter__(self):
-        for i in range(self.num_iter):
-            yield tuple(self.sequence)
-            self._next_sequence(self.n - 1)
-
-    def _next_sequence(self, i):
-        self.sequence[i] += 1
-        if self.sequence[i] > 2:
-            self.sequence[i] = 0
-            self._next_sequence(i - 1)
-        if self.sequence[i - 1] == self.sequence[i]:
-            self._next_sequence(i)
+    for _ in range(2 ** (n - 1)):
+        yield tuple(sequence)
+        next_sequence(n - 1)
 
 
-class KasnerPath(object):
+def generate_periodic_sequences(n):
 
-    def __init__(self, n):
-        self.n = n
-        self.seen_paths = set()
-        self._add_all_paths()
-
-    def __iter__(self):
-        return iter(sorted(self.seen_paths))
-
-    def __len__(self):
-        return len(self.seen_paths)
-
-    def _add_all_paths(self):
-        for s in KasnerSequence(self.n):
-            self._add_path(s)
-
-    def _add_path(self, s):
-        rotations = [s[i:] + s[:i] for i in range(len(s))]
-        least_rotation = sorted(rotations)[0]
-        if self._is_periodic(least_rotation):
-            self.seen_paths.add(least_rotation)
-
-    def _is_periodic(self, path):
+    def is_periodic(sequence):
         try:
-            path.index(0)
-            path.index(1)
-            path.index(2)
+            sequence.index(0)
+            sequence.index(1)
+            sequence.index(2)
         except ValueError:
             return False
 
-        for i in range(len(path) - 1):
-            if path[i] == path[i + 1]:
+        for i in range(len(sequence) - 1):
+            if sequence[i] == sequence[i + 1]:
                 return False
 
         return True
 
+    seen_sequences = set()
+
+    for s in generate_sequences(n):
+        rotations = [s[i:] + s[:i] for i in range(len(s))]
+        least_rotation = sorted(rotations)[0]
+        if is_periodic(least_rotation):
+            seen_sequences.add(least_rotation)
+
+    for s in sorted(seen_sequences):
+        yield s
+
 
 def refine_path(path):
 
-    path_range = [-pi/3, pi/3]
+    path_range = [-pi / 3, pi / 3]
 
-    i = 0
+    i = 1
     while abs(path_range[0] - path_range[1]) > 1e-8:
         idx = i % len(path)
         path_range[0] = last_angle(path_range[0], path[idx])
@@ -83,7 +67,7 @@ def last_angle(th, i):
         if i == 0:
             return acos((5 * cos(th) - 4) / (4 * cos(th) - 5))
         elif i == 1:
-            return -acos((5 * cos(th + 2 * pi / 3) - 4) / (4 * cos(th + 2 * pi / 3) - 5) ) - 2 * pi / 3
+            return -acos((5 * cos(th + 2 * pi / 3) - 4) / (4 * cos(th + 2 * pi / 3) - 5)) - 2 * pi / 3
         else:
             return th
 
@@ -106,8 +90,5 @@ def last_angle(th, i):
 
 if __name__ == "__main__":
 
-    n = int(sys.argv[1])
-
-    for path in KasnerPath(n):
-        theta = refine_path(path)
-        print path, theta, cos(theta), sin(theta)
+    for n in range(3, 38):
+        print n, len(list(generate_periodic_sequences(n)))
